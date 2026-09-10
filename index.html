@@ -31,19 +31,28 @@
         .icon { font-size: 48px; margin-bottom: 12px; }
         h2 { margin: 0 0 8px 0; font-size: 20px; }
         p { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.4; }
-        button {
+        
+        button, .btn-tg, .btn-cancel {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: 10px;
-            background-color: #2481cc;
-            color: #ffffff;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
+            box-sizing: border-box;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 10px;
         }
-        button:active { opacity: 0.8; }
+        
+        button { background-color: #2481cc; color: #ffffff; }
+        .btn-tg { background-color: #00e676; color: #000000; }
+        .btn-cancel { background-color: rgba(255, 255, 255, 0.1); color: #cccccc; border: 1px solid rgba(255, 255, 255, 0.2); }
+        
+        button:active, .btn-tg:active, .btn-cancel:active { opacity: 0.8; }
         #status { margin-top: 16px; font-size: 13px; color: #00e676; }
+        #actionsArea { margin-top: 16px; display: none; }
     </style>
 </head>
 <body>
@@ -52,17 +61,25 @@
     <div class="icon">📡</div>
     <h2>Belphone NFC Module</h2>
     <p>Нажмите кнопку и поднесите ключ СКУД к задней панели смартфона.</p>
+    
     <button id="scanBtn" onclick="startScan()">Считать NFC ключ</button>
     <div id="status"></div>
+
+    <div id="actionsArea">
+        <a id="tgBtn" class="btn-tg" href="#">Вернуться в Telegram с ключом 🚀</a>
+    </div>
+
+    <a id="cancelBtn" class="btn-cancel" href="https://t.me/BelPhon_bot">Вернуться к регистрации ↩️</a>
 </div>
 
 <script>
-    // Указан юзернейм вашего бота
     const BOT_USERNAME = 'BelPhon_bot'; 
 
     async function startScan() {
         const statusDiv = document.getElementById('status');
         const btn = document.getElementById('scanBtn');
+        const actionsArea = document.getElementById('actionsArea');
+        const tgBtn = document.getElementById('tgBtn');
 
         if (!('NDEFReader' in window)) {
             statusDiv.style.color = '#ff5252';
@@ -87,12 +104,18 @@
                     const cleanUid = serialNumber.replace(/:/g, '');
                     
                     statusDiv.style.color = '#00e676';
-                    statusDiv.innerText = "✅ Ключ считан! Переход в Telegram...";
+                    statusDiv.innerText = "✅ Ключ считан!";
                     
-                    // Автоматический редирект в бота с параметром nfc_
+                    const directTgUrl = `tg://resolve?domain=${BOT_USERNAME}&start=nfc_${cleanUid}`;
+                    
+                    // Показываем зеленую кнопку возврата с UID
+                    tgBtn.href = directTgUrl;
+                    actionsArea.style.display = 'block';
+
+                    // Пробуем автоматический переход
                     setTimeout(() => {
-                        window.location.href = `https://t.me/${BOT_USERNAME}?start=nfc_${cleanUid}`;
-                    }, 800);
+                        window.location.href = directTgUrl;
+                    }, 500);
                 }
             });
 
