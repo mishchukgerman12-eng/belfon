@@ -1,374 +1,123 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>БелФон: Регистратор ключей</title>
-  
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: #182533;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 400px;
-      background-color: #213040;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    h1 {
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #ffffff;
-    }
-
-    .step {
-      display: none;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: #7f91a4;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px;
-      background-color: #182533;
-      border: 1px solid #2b3e50;
-      border-radius: 8px;
-      color: #ffffff;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input:focus {
-      border-color: #2481cc;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background-color: #2481cc;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.1s;
-      margin-top: 10px;
-    }
-
-    .btn:active {
-      background-color: #1c6ca8;
-      transform: scale(0.98);
-    }
-
-    .error-msg {
-      color: #e53935;
-      font-size: 14px;
-      margin-top: 10px;
-      text-align: center;
-      display: none;
-    }
-
-    /* NFC Step Styling */
-    .nfc-box {
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    .nfc-status {
-      margin-bottom: 20px;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .scan-btn-wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    .btn-round {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background-color: #2481cc;
-      color: #ffffff;
-      border: none;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(36, 129, 204, 0.4);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 10px;
-    }
-
-    .btn-round.scanning {
-      animation: pulse 1.5s infinite;
-      background-color: #1565c0;
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(36, 129, 204, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 20px rgba(36, 129, 204, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(36, 129, 204, 0);
-      }
-    }
-
-    /* Success Step */
-    .success-card {
-      background-color: #182533;
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 15px;
-      border: 1px solid #2b3e50;
-    }
-
-    .success-card p {
-      margin-bottom: 8px;
-      font-size: 15px;
-    }
-
-    .uid-badge {
-      display: inline-block;
-      background-color: #2481cc;
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 16px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belphone СКУД — NFC Сканер</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #121212);
+            color: var(--tg-theme-text-color, #ffffff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        h2 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+        }
+        p {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:active {
+            opacity: 0.8;
+        }
+        #status {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #00e676;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>БелФон: Регистратор ключей</h1>
+<div class="card">
+    <div class="icon">📡</div>
+    <h2>Belphone NFC Module</h2>
+    <p>Поднесите ключ СКУД к задней панели смартфона для автоматической регистрации UID.</p>
+    <button id="scanBtn" onclick="startScan()">Считать NFC ключ</button>
+    <div id="status"></div>
+</div>
 
-    <!-- ШАГ 1: Авторизация -->
-    <div id="step1" class="step active">
-      <div class="form-group">
-        <label>Выберите или введите адрес дома</label>
-        <input type="text" id="addressInput" value="ул. Ленина, д. 10" placeholder="ул. Ленина, д. 10">
-      </div>
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
 
-      <div class="form-group">
-        <label>Номер квартиры</label>
-        <input type="number" id="aptInput" placeholder="Например: 1">
-      </div>
+    async function startScan() {
+        const statusDiv = document.getElementById('status');
+        const btn = document.getElementById('scanBtn');
 
-      <div class="form-group">
-        <label>Секретный код доступа</label>
-        <input type="password" id="codeInput" placeholder="Введите код">
-      </div>
-
-      <button class="btn" onclick="verifyAuth()">Проверить данные</button>
-      <div id="authError" class="error-msg"></div>
-    </div>
-
-    <!-- ШАГ 2: Сканирование NFC -->
-    <div id="step2" class="step">
-      <div class="nfc-box">
-        <div class="nfc-status">
-          🔓 Доступ подтвержден.<br>Приложите ваш Mifare-ключ к задней крышке смартфона.
-        </div>
-
-        <div class="scan-btn-wrapper">
-          <button id="scanBtn" class="btn-round" onclick="startNfcScan()">
-            ВКЛЮЧИТЬ СКАНЕР NFC
-          </button>
-        </div>
-
-        <div id="nfcStatusText" style="color: #7f91a4; font-size: 14px; margin-top: 10px;"></div>
-        <div id="nfcError" class="error-msg"></div>
-      </div>
-    </div>
-
-    <!-- ШАГ 3: Финал -->
-    <div id="step3" class="step">
-      <div style="text-align: center; margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #4caf50;">
-        🎉 УСПЕХ! КЛЮЧ ЗАРЕГИСТРИРОВАН!
-      </div>
-
-      <div class="success-card">
-        <p>• <b>Адрес:</b> <span id="resAddress"></span></p>
-        <p>• <b>Квартира:</b> №<span id="resApt"></span></p>
-        <p>• <b>ID Ключа:</b> <span id="resUid" class="uid-badge"></span></p>
-      </div>
-
-      <button class="btn" style="margin-top: 20px;" onclick="resetForm()">Зарегистрировать еще один</button>
-    </div>
-  </div>
-
-  <script>
-    // Инициализация Telegram WebApp при наличии
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
-
-    let authData = {
-      address: '',
-      apt: ''
-    };
-
-    // Функция проверки авторизации (Шаг 1)
-    function verifyAuth() {
-      const address = document.getElementById('addressInput').value.trim();
-      const apt = document.getElementById('aptInput').value.trim();
-      const code = document.getElementById('codeInput').value.trim();
-      const errorDiv = document.getElementById('authError');
-
-      errorDiv.style.display = 'none';
-
-      if (address === "ул. Ленина, д. 10" && apt === "1" && code === "2026") {
-        authData.address = address;
-        authData.apt = apt;
-        showStep('step2');
-      } else if (apt === "2") {
-        showError(errorDiv, "🚫 Квартира уже зарегистрирована!");
-      } else if (code !== "2026") {
-        showError(errorDiv, "❌ Неверный код дома!");
-      } else {
-        showError(errorDiv, "❌ Неверно введены данные!");
-      }
-    }
-
-    // Запуск сканирования NFC (Шаг 2)
-    async function startNfcScan() {
-      const nfcError = document.getElementById('nfcError');
-      const nfcStatusText = document.getElementById('nfcStatusText');
-      const scanBtn = document.getElementById('scanBtn');
-
-      nfcError.style.display = 'none';
-
-      // Проверка поддержки Web NFC браузером
-      if (!('NDEFReader' in window)) {
-        showError(nfcError, "⚠️ Web NFC не поддерживается этим браузером. Откройте страницу через Google Chrome на Android по HTTPS.");
-        return;
-      }
-
-      try {
-        const ndef = new NDEFReader();
-        
-        // Запрос разрешения и запуск сканирования
-        await ndef.scan();
-
-        scanBtn.classList.add('scanning');
-        scanBtn.innerText = "СКАНЕР АКТИВЕН";
-        nfcStatusText.innerText = "📡 Датчик активен... Приложите ключ к телефону.";
-
-        ndef.addEventListener("readingerror", () => {
-          showError(nfcError, "⚠️ Ошибка чтения метки. Попробуйте еще раз.");
-        });
-
-        ndef.addEventListener("reading", ({ serialNumber }) => {
-          if (!serialNumber) {
-            showError(nfcError, "⚠️ Не удалось получить UID ключа.");
+        if (!('NDEFReader' in window)) {
+            statusDiv.style.color = '#ff5252';
+            statusDiv.innerText = "❌ Web NFC не поддерживается вашим браузером. Откройте в Chrome на Android.";
             return;
-          }
+        }
 
-          // Форматирование UID: удаление двоеточий и перевод в верхний регистр
-          const formattedUid = serialNumber.replace(/:/g, '').toUpperCase();
-          
-          // Воспроизведение вибрации при успешном сканировании
-          if (navigator.vibrate) {
-            navigator.vibrate(200);
-          }
+        try {
+            const ndef = new NDEFReader();
+            await ndef.scan();
+            btn.innerText = "Сканирование...";
+            statusDiv.innerText = "🔍 Ожидаю прикосновения карты/метки...";
 
-          finishRegistration(formattedUid);
-        });
+            ndef.addEventListener("readingerror", () => {
+                statusDiv.style.color = '#ff5252';
+                statusDiv.innerText = "❌ Ошибка чтения метки. Попробуйте еще раз.";
+            });
 
-      } catch (error) {
-        showError(nfcError, "❌ Ошибка NFC: " + error.message);
-      }
+            ndef.addEventListener("reading", ({ serialNumber }) => {
+                if (serialNumber) {
+                    statusDiv.style.color = '#00e676';
+                    statusDiv.innerText = "✅ Ключ считан: " + serialNumber;
+                    
+                    setTimeout(() => {
+                        tg.sendData(serialNumber);
+                    }, 800);
+                }
+            });
+
+        } catch (error) {
+            statusDiv.style.color = '#ff5252';
+            statusDiv.innerText = "⚠️ Ошибка доступа: " + error.message;
+        }
     }
+</script>
 
-    // Завершение регистрации (Шаг 3)
-    function finishRegistration(uid) {
-      document.getElementById('resAddress').innerText = authData.address;
-      document.getElementById('resApt').innerText = authData.apt;
-      document.getElementById('resUid').innerText = uid;
-
-      showStep('step3');
-
-      // Отправка данных в Telegram WebApp, если приложение запущено внутри Telegram
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-        const payload = JSON.stringify({
-          address: authData.address,
-          apt: authData.apt,
-          uid: uid
-        });
-        window.Telegram.WebApp.sendData(payload);
-      }
-    }
-
-    // Переключение шагов
-    function showStep(stepId) {
-      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-      document.getElementById(stepId).classList.add('active');
-    }
-
-    // Вывод ошибок
-    function showError(element, text) {
-      element.innerText = text;
-      element.style.display = 'block';
-    }
-
-    // Сброс формы
-    function resetForm() {
-      document.getElementById('aptInput').value = '';
-      document.getElementById('codeInput').value = '';
-      const scanBtn = document.getElementById('scanBtn');
-      scanBtn.classList.remove('scanning');
-      scanBtn.innerText = "ВКЛЮЧИТЬ СКАНЕР NFC";
-      document.getElementById('nfcStatusText').innerText = '';
-      showStep('step1');
-    }
-  </script>
 </body>
 </html>
