@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Belphone СКУД — NFC Сканер</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #121212);
-            color: var(--tg-theme-text-color, #ffffff);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -29,40 +28,22 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        h2 {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-        }
-        p {
-            font-size: 14px;
-            color: #aaa;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
+        .icon { font-size: 48px; margin-bottom: 12px; }
+        h2 { margin: 0 0 8px 0; font-size: 20px; }
+        p { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.4; }
         button {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: 10px;
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            background-color: #2481cc;
+            color: #ffffff;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        button:active {
-            opacity: 0.8;
-        }
-        #status {
-            margin-top: 16px;
-            font-size: 13px;
-            color: #00e676;
-        }
+        button:active { opacity: 0.8; }
+        #status { margin-top: 16px; font-size: 13px; color: #00e676; }
     </style>
 </head>
 <body>
@@ -70,15 +51,14 @@
 <div class="card">
     <div class="icon">📡</div>
     <h2>Belphone NFC Module</h2>
-    <p>Поднесите ключ СКУД к задней панели смартфона для автоматической регистрации UID.</p>
+    <p>Нажмите кнопку и поднесите ключ СКУД к задней панели смартфона.</p>
     <button id="scanBtn" onclick="startScan()">Считать NFC ключ</button>
     <div id="status"></div>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+    // Указан юзернейм вашего бота
+    const BOT_USERNAME = 'BelPhon_bot'; 
 
     async function startScan() {
         const statusDiv = document.getElementById('status');
@@ -86,7 +66,7 @@
 
         if (!('NDEFReader' in window)) {
             statusDiv.style.color = '#ff5252';
-            statusDiv.innerText = "❌ Web NFC не поддерживается вашим браузером. Откройте в Chrome на Android.";
+            statusDiv.innerText = "❌ Web NFC не поддерживается этим браузером. Откройте страницу в Chrome!";
             return;
         }
 
@@ -94,20 +74,24 @@
             const ndef = new NDEFReader();
             await ndef.scan();
             btn.innerText = "Сканирование...";
-            statusDiv.innerText = "🔍 Ожидаю прикосновения карты/метки...";
+            statusDiv.style.color = '#ffffff';
+            statusDiv.innerText = "🔍 Ожидаю прикосновения метки...";
 
             ndef.addEventListener("readingerror", () => {
                 statusDiv.style.color = '#ff5252';
-                statusDiv.innerText = "❌ Ошибка чтения метки. Попробуйте еще раз.";
+                statusDiv.innerText = "❌ Ошибка чтения. Попробуйте еще раз.";
             });
 
             ndef.addEventListener("reading", ({ serialNumber }) => {
                 if (serialNumber) {
-                    statusDiv.style.color = '#00e676';
-                    statusDiv.innerText = "✅ Ключ считан: " + serialNumber;
+                    const cleanUid = serialNumber.replace(/:/g, '');
                     
+                    statusDiv.style.color = '#00e676';
+                    statusDiv.innerText = "✅ Ключ считан! Переход в Telegram...";
+                    
+                    // Автоматический редирект в бота с параметром nfc_
                     setTimeout(() => {
-                        tg.sendData(serialNumber);
+                        window.location.href = `https://t.me/${BOT_USERNAME}?start=nfc_${cleanUid}`;
                     }, 800);
                 }
             });
